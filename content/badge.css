@@ -1,0 +1,60 @@
+/* DocHopper "Back to Context" badge styles */
+
+:host {
+  all: initial;
+}
+
+.dochopper-badge {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2147483647;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(15, 15, 20, 0.95);
+  color: #f0eff4;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  font-size: 12px;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  overflow: hidden;
+  animation: dochopper-badge-in 160ms ease-out forwards;
+}
+
+.dochopper-badge-label {
+  white-space: nowrap;
+}
+
+.dochopper-badge-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, #f0e040, rgba(240, 224, 64, 0.2));
+  transform-origin: left;
+}
+
+.dochopper-badge-key {
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid #3a3a4a;
+  font-size: 10px;
+}
+
+@keyframes dochopper-badge-in {
+  from {
+    opacity: 0;
+    transform: translate3d(8px, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+

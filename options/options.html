@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>DocHopper Settings</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #050507;
+        --panel: #0f0f10;
+        --border: #262630;
+        --accent: #f0e040;
+        --text: #f0eff4;
+        --muted: #7b7b92;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+        background: radial-gradient(circle at top left, #14141d, #050507);
+        color: var(--text);
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 22px;
+      }
+      p {
+        margin: 0 0 16px;
+        color: var(--muted);
+      }
+      .panel {
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: linear-gradient(145deg, #101015, #070709);
+        padding: 16px 18px;
+        margin-bottom: 16px;
+      }
+      .panel h2 {
+        margin: 0 0 10px;
+        font-size: 15px;
+      }
+      label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 6px 0;
+        font-size: 13px;
+      }
+      select,
+      input[type="checkbox"] {
+        accent-color: var(--accent);
+      }
+      select {
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: #14141b;
+        color: var(--text);
+        padding: 4px 8px;
+        font-size: 13px;
+      }
+      .pro-label {
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 999px;
+        border: 1px solid rgba(240, 224, 64, 0.7);
+        color: var(--accent);
+        margin-left: 6px;
+      }
+      .status {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+    </style>
+    <script src="options.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>DocHopper Settings</h1>
+      <p>Tune how DocHopper opens documentation and manages your context.</p>
+    </header>
+
+    <section class="panel">
+      <h2>Tab Behavior</h2>
+      <label>
+        <span>Open docs in</span>
+        <select id="tab-mode">
+          <option value="reuse">Reuse current tab</option>
+          <option value="tab" data-pro="true">New tab (Pro)</option>
+          <option value="smart" data-pro="true">Smart mode (Pro)</option>
+        </select>
+      </label>
+      <div class="status" id="plan-status"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Appearance</h2>
+      <label>
+        <span>Theme</span>
+        <select id="theme">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="system">System</option>
+        </select>
+      </label>
+      <label>
+        <span>Show "Back to Context" badge</span>
+        <input type="checkbox" id="show-badge" />
+      </label>
+    </section>
+  </body>
+  </html>
+

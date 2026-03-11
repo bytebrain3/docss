@@ -1,0 +1,194 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 360px;
+  height: 480px;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  background: radial-gradient(circle at top left, #191926, #050507);
+  color: #f0eff4;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px 12px;
+  gap: 8px;
+}
+
+.dh-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dh-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dh-name {
+  font-family: "Syne", system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.dh-pro-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(240, 224, 64, 0.8);
+  color: #f0e040;
+}
+
+.dh-icon-btn {
+  border-radius: 999px;
+  border: 1px solid #2d2d3a;
+  background: #121218;
+  color: #f0eff4;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dh-icon-btn:hover {
+  background: #181822;
+}
+
+.dh-search-wrapper {
+  margin-top: 4px;
+}
+
+.dh-search-input {
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid #303038;
+  background: #101018;
+  color: #f0eff4;
+  font-size: 13px;
+  outline: none;
+}
+
+.dh-search-input::placeholder {
+  color: #7b7b92;
+}
+
+.dh-grid {
+  flex: 1;
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  overflow-y: auto;
+  padding-bottom: 4px;
+}
+
+.dh-card {
+  position: relative;
+  border-radius: 10px;
+  border: 1px solid #242433;
+  background: radial-gradient(circle at top left, #1b1b28, #0a0a11);
+  padding: 8px 9px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform 120ms ease-out, border-color 120ms ease-out, box-shadow 120ms ease-out;
+}
+
+.dh-card:hover {
+  transform: translateY(-1px);
+  border-color: #f0e040;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.dh-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dh-card-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #181821;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.dh-card-name {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.dh-card-url {
+  font-family: "DM Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 10px;
+  color: #8686a0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dh-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: #77778e;
+}
+
+.dh-shortcut-pill {
+  padding: 1px 5px;
+  border-radius: 999px;
+  border: 1px solid #3a3a4a;
+  font-family: "DM Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.dh-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #787892;
+}
+
+.dh-add-btn {
+  border-radius: 999px;
+  border: 1px solid #30303c;
+  padding: 5px 10px;
+  background: #15151f;
+  color: #f0eff4;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.dh-add-btn:hover {
+  border-color: #f0e040;
+}
+
+.dh-empty {
+  font-size: 12px;
+  color: #7b7b92;
+  text-align: center;
+  padding-top: 40px;
+}
+

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>DocHopper</title>
+    <link rel="stylesheet" href="popup.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <div id="root">
+      <header class="dh-header">
+        <div class="dh-title">
+          <span class="dh-name">DocHopper</span>
+          <span class="dh-pro-badge">Pro</span>
+        </div>
+        <button id="settings-btn" class="dh-icon-btn" title="Settings">
+          ⚙
+        </button>
+      </header>
+
+      <div class="dh-search-wrapper">
+        <input
+          id="search-input"
+          class="dh-search-input"
+          type="text"
+          placeholder="Search all documentation sites…"
+        />
+      </div>
+
+      <main id="sites-container" class="dh-grid" aria-live="polite"></main>
+
+      <footer class="dh-footer">
+        <button id="add-site-btn" class="dh-add-btn">＋ Add Custom Site</button>
+        <span class="dh-footnote">Free: 5 sites · Reuse mode only</span>
+      </footer>
+    </div>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+  </html>
+

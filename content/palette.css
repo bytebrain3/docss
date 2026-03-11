@@ -1,0 +1,152 @@
+/* DocHopper command palette styles */
+
+:host {
+  all: initial;
+}
+
+.dochopper-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: rgba(5, 5, 10, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+}
+
+.dochopper-palette {
+  margin-top: 80px;
+  width: min(640px, 90vw);
+  background: #0f0f10;
+  color: #f0eff4;
+  border-radius: 12px;
+  border: 1px solid #2a2a30;
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+  transform-origin: top center;
+  animation: dochopper-palette-in 150ms ease-out forwards;
+}
+
+.dochopper-search {
+  padding: 12px 14px;
+  border-bottom: 1px solid #22222a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dochopper-search input {
+  flex: 1;
+  background: #18181b;
+  border-radius: 8px;
+  border: 1px solid #303038;
+  padding: 8px 10px;
+  color: #f0eff4;
+  font-size: 13px;
+  outline: none;
+}
+
+.dochopper-search input::placeholder {
+  color: #707082;
+}
+
+.dochopper-list {
+  max-height: 400px;
+  overflow: auto;
+}
+
+.dochopper-section {
+  padding: 6px 0 4px;
+}
+
+.dochopper-section-title {
+  padding: 4px 16px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6f6f80;
+}
+
+.dochopper-item {
+  display: flex;
+  align-items: center;
+  padding: 7px 16px;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.dochopper-item[data-active="true"] {
+  background: linear-gradient(90deg, rgba(240, 224, 64, 0.16), transparent);
+}
+
+.dochopper-item:hover {
+  background: #18181f;
+}
+
+.dochopper-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #18181f;
+  font-size: 14px;
+}
+
+.dochopper-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.dochopper-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dochopper-url {
+  font-family: "DM Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 11px;
+  color: #82829a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dochopper-meta {
+  font-size: 11px;
+  color: #606074;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.dochopper-shortcut {
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid #3c3c4c;
+  font-family: "DM Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 10px;
+}
+
+.dochopper-highlight {
+  color: #f0e040;
+}
+
+@keyframes dochopper-palette-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
