@@ -134,8 +134,51 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (addSiteBtn) {
-    addSiteBtn.addEventListener("click", () => {
-      alert("Custom sites management will be available in a later iteration.");
+    addSiteBtn.addEventListener("click", async () => {
+      const name = prompt("Site name (e.g. React Docs):");
+      if (!name) return;
+      const url = prompt("Base URL (e.g. https://react.dev):");
+      if (!url) return;
+      const icon = prompt("Icon emoji (optional):", "📚") || "📚";
+      const shortcut = prompt("Keyboard shortcut label (e.g. ALT+6):", "ALT+6") || "ALT+6";
+
+      const trimmedUrl = url.trim();
+      try {
+        // Validate URL.
+        // eslint-disable-next-line no-new
+        new URL(trimmedUrl);
+      } catch {
+        alert("Please enter a valid URL including protocol, e.g. https://example.com");
+        return;
+      }
+
+      const idBase = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "custom";
+      let uniqueId = idBase;
+      let suffix = 2;
+      const ids = new Set(allSites.map((s) => s.id));
+      while (ids.has(uniqueId)) {
+        uniqueId = `${idBase}-${suffix}`;
+        suffix += 1;
+      }
+
+      /** @type {DocSite} */
+      const site = {
+        id: uniqueId,
+        name: name.trim(),
+        url: trimmedUrl,
+        searchUrl: `${trimmedUrl.replace(/\/+$/, "")}/search?q=`,
+        icon,
+        shortcut: shortcut.toLowerCase(),
+        pinned: false,
+        searchMode: "queryParam"
+      };
+
+      const nextSites = [...allSites, site];
+      await new Promise((resolve) => {
+        chrome.runtime.sendMessage({ type: "dochopper:updateSites", sites: nextSites }, () => resolve(null));
+      });
+      allSites = nextSites;
+      renderSites(searchInput?.value || "");
     });
   }
 });

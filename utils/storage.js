@@ -11,10 +11,6 @@
  */
 
 /**
- * @typedef {"free" | "pro-once" | "pro-sub"} DocPlan
- */
-
-/**
  * @typedef {Object} DocLastVisited
  * @property {string} url
  * @property {string} title
@@ -41,7 +37,7 @@
  * @property {string} paletteShortcut
  * @property {string} returnShortcut
  * @property {"dark" | "light" | "system"} theme
- * @property {DocPlan} plan
+ * @property {string} plan
  */
 
 /**
@@ -75,7 +71,7 @@ export const DEFAULT_SITES = /** @type {DocSite[]} */ ([
     id: "npm",
     name: "npm Registry",
     url: "https://www.npmjs.com",
-    searchUrl: "https://www.npmjs.com/search?q=",
+    searchUrl: "https://www.npmjs.com/search",
     icon: "📦",
     shortcut: "alt+2",
     pinned: true,
@@ -85,7 +81,7 @@ export const DEFAULT_SITES = /** @type {DocSite[]} */ ([
     id: "github",
     name: "GitHub",
     url: "https://github.com",
-    searchUrl: "https://github.com/search?q=",
+    searchUrl: "https://github.com/search",
     icon: "🐙",
     shortcut: "alt+3",
     pinned: true,
@@ -119,7 +115,8 @@ export const DEFAULT_SETTINGS = /** @type {DocSettings} */ ({
   paletteShortcut: "ctrl+shift+d",
   returnShortcut: "ctrl+shift+b",
   theme: "dark",
-  plan: "free"
+  // Entire app is unlocked; treat as Pro by default.
+  plan: "pro"
 });
 
 const SYNC_SITES_KEY = "dochopper_sites";
@@ -217,10 +214,6 @@ export async function getSettings() {
   /** @type {Partial<DocSettings> | undefined} */
   const stored = data[SYNC_SETTINGS_KEY];
   const merged = { ...DEFAULT_SETTINGS, ...(stored || {}) };
-  // Ensure free plan cannot use pro-only tab modes.
-  if (merged.plan === "free" && merged.tabMode !== "reuse") {
-    merged.tabMode = "reuse";
-  }
   return merged;
 }
 
@@ -232,9 +225,6 @@ export async function getSettings() {
 export async function updateSettings(partial) {
   const current = await getSettings();
   const next = { ...current, ...partial };
-  if (next.plan === "free" && next.tabMode !== "reuse") {
-    next.tabMode = "reuse";
-  }
   await storageSetDebounced("sync", SYNC_SETTINGS_KEY, next);
   return next;
 }
@@ -245,7 +235,7 @@ export async function updateSettings(partial) {
  * @returns {boolean}
  */
 export function isPro(settings) {
-  return settings.plan === "pro-once" || settings.plan === "pro-sub";
+  return true;
 }
 
 /**

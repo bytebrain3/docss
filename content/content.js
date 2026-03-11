@@ -40,7 +40,7 @@ async function ensureModules() {
   const [storage, shortcuts, search] = await Promise.all([
     import(chrome.runtime.getURL("utils/storage.js")),
     import(chrome.runtime.getURL("utils/shortcuts.js")),
-    import(chrome.runtime.getURL("utils/search.js"))
+    import(chrome.runtime.getURL("utils/search.js")),
   ]);
   storageModule = storage;
   shortcutsModule = shortcuts;
@@ -128,8 +128,12 @@ async function refreshPaletteResults() {
   if (!searchModule || !storageModule || !listContainerEl) return;
   const query = searchInputEl ? searchInputEl.value : "";
 
-  const response = await chrome.runtime.sendMessage({ type: "dochopper:getSitesAndSettings" });
-  const sites = /** @type {import("../utils/storage.js").DocSite[]} */ (response.sites || []);
+  const response = await chrome.runtime.sendMessage({
+    type: "dochopper:getSitesAndSettings",
+  });
+  const sites = /** @type {import("../utils/storage.js").DocSite[]} */ (
+    response.sites || []
+  );
 
   const { fuzzySearchSites } = searchModule;
   const results = fuzzySearchSites(query, sites);
@@ -204,9 +208,11 @@ async function refreshPaletteResults() {
  */
 function moveSelection(delta) {
   if (currentItems.length === 0) return;
-  currentIndex = (currentIndex + delta + currentItems.length) % currentItems.length;
+  currentIndex =
+    (currentIndex + delta + currentItems.length) % currentItems.length;
   for (let i = 0; i < currentItems.length; i += 1) {
-    currentItems[i].element.dataset.active = i === currentIndex ? "true" : "false";
+    currentItems[i].element.dataset.active =
+      i === currentIndex ? "true" : "false";
   }
   const activeItem = currentItems[currentIndex]?.element;
   if (activeItem && listContainerEl) {
@@ -235,14 +241,14 @@ async function performJump(explicitSiteId) {
     scrollY: window.scrollY,
     selectedText: window.getSelection()?.toString() || "",
     timestamp: Date.now(),
-    tabId: -1 // background will replace with real tabId based on sender.tab.id
+    tabId: -1, // background will replace with real tabId based on sender.tab.id
   };
 
   await chrome.runtime.sendMessage({
     type: "dochopper:jumpFromContent",
     siteId,
     selectedText: snapshot.selectedText,
-    snapshot
+    snapshot,
   });
 
   closePalette();
@@ -275,7 +281,10 @@ async function showReturnBadge(previousTitle) {
 
   const label = document.createElement("span");
   label.className = "dochopper-badge-label";
-  const truncated = previousTitle.length > 20 ? `${previousTitle.slice(0, 20)}…` : previousTitle;
+  const truncated =
+    previousTitle.length > 20
+      ? `${previousTitle.slice(0, 20)}…`
+      : previousTitle;
   label.textContent = `← Back to ${truncated}`;
 
   const keyHint = document.createElement("span");
@@ -358,7 +367,7 @@ function applySearchForwarding(siteId, query) {
     try {
       // Tailwind docs use a search button and an input in a dialog; we try common selectors.
       const openButton =
-        document.querySelector('[data-docsearch-trigger]') ||
+        document.querySelector("[data-docsearch-trigger]") ||
         document.querySelector('button[aria-label="Search"]');
       if (openButton instanceof HTMLElement) {
         openButton.click();
@@ -394,32 +403,13 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-// Global keydown handler for palette shortcuts and navigation.
+// Global keydown handler for in-palette navigation only.
+// Ctrl/Cmd+Shift+D and Ctrl/Cmd+Shift+B are handled exclusively
+// by the Chrome commands API (manifest.json) via the background service worker
+// to avoid double-triggering.
 window.addEventListener(
   "keydown",
   (event) => {
-    // Open/close palette with Cmd/Ctrl+Shift+D
-    const isPaletteShortcut =
-      (event.key === "d" || event.key === "D") && event.shiftKey && (event.ctrlKey || event.metaKey);
-    const isReturnShortcut =
-      (event.key === "b" || event.key === "B") && event.shiftKey && (event.ctrlKey || event.metaKey);
-
-    if (isPaletteShortcut) {
-      event.preventDefault();
-      if (paletteOpen) {
-        closePalette();
-      } else {
-        void openPalette();
-      }
-      return;
-    }
-
-    if (isReturnShortcut) {
-      event.preventDefault();
-      chrome.runtime.sendMessage({ type: "dochopper:returnContext" });
-      return;
-    }
-
     if (!paletteOpen) return;
 
     if (event.key === "Escape") {
@@ -446,7 +436,7 @@ window.addEventListener(
       return;
     }
   },
-  true
+  true,
 );
 
 // Message listener for events coming from the background/popup.
@@ -465,4 +455,3 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
     void performJump(message.siteId);
   }
 });
-

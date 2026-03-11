@@ -31,7 +31,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 chrome.commands.onCommand.addListener(async (command, tab) => {
   if (!tab || !tab.id) return;
   if (command === "jump-palette") {
-    chrome.tabs.sendMessage(tab.id, { type: "dochopper:togglePalette" });
+    safeSendMessageToTab(tab.id, { type: "dochopper:togglePalette" });
   } else if (command === "return-context") {
     await handleReturnContext(tab.id);
   }
@@ -84,14 +84,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     if (type === "dochopper:jumpFromPopup") {
-      // Popup requests jump for the active tab; we notify that tab to initiate the jump.
+      // Popup requests jump for the active tab. Prefer content script for full context,
+      // but fall back to a best-effort jump on restricted pages.
       const siteId = message.siteId;
       const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (!activeTab || !activeTab.id) {
         sendResponse({ ok: false });
         return;
       }
-      chrome.tabs.sendMessage(activeTab.id, { type: "dochopper:initiateJump", siteId });
+      const url = activeTab.url || "";
+      if (isRestrictedUrl(url)) {
+        const snapshot = {
+          url,
+          title: activeTab.title || url,
+          scrollX: 0,
+          scrollY: 0,
+          selectedText: "",
+          timestamp: Date.now(),
+          tabId: activeTab.id
+        };
+        await handleJumpFromTab(activeTab.id, snapshot, siteId, "");
+      } else {
+        safeSendMessageToTab(activeTab.id, { type: "dochopper:initiateJump", siteId });
+      }
       sendResponse({ ok: true });
       return;
     }
@@ -107,7 +122,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // Apply any pending search forwarding for this tab.
     const pending = pendingSearchForTab.get(tabId);
     if (pending) {
-      chrome.tabs.sendMessage(tabId, {
+      safeSendMessageToTab(tabId, {
         type: "dochopper:applySearchForwarding",
         siteId: pending.siteId,
         query: pending.query
@@ -118,7 +133,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // Restore context after a "back" navigation, if needed.
     const restore = pendingRestoreForTab.get(tabId);
     if (restore && tab.url && urlsRoughlyEqual(tab.url, restore.url)) {
-      chrome.tabs.sendMessage(tabId, {
+      safeSendMessageToTab(tabId, {
         type: "dochopper:restoreContext",
         snapshot: restore
       });
@@ -140,21 +155,31 @@ async function handleJumpFromTab(tabId, snapshot, siteId, selectedText) {
   const site = sites.find((s) => s.id === siteId);
   if (!site) return;
 
+  snapshot.tabId = tabId;
   await pushContextSnapshot(snapshot);
 
   const searchQuery = selectedText || "";
   const destinationUrl = buildDestinationUrl(site, searchQuery);
 
   let targetTabId = tabId;
-  if (settings.tabMode === "tab" || settings.tabMode === "smart") {
-    // For now, Smart behaves like Tab when plan is pro, otherwise reuse.
-    if (settings.plan !== "free") {
+  if (settings.tabMode === "tab") {
+    const created = await chrome.tabs.create({ url: destinationUrl, active: true });
+    if (created.id != null) {
+      targetTabId = created.id;
+    }
+  } else if (settings.tabMode === "smart") {
+    // Try to reuse an existing tab already on this doc site.
+    const sameOriginTabs = await chrome.tabs.query({});
+    const targetOrigin = new URL(site.url).origin;
+    const existing = sameOriginTabs.find((t) => t.url && t.url.startsWith(targetOrigin));
+    if (existing && existing.id != null) {
+      targetTabId = existing.id;
+      await chrome.tabs.update(existing.id, { url: destinationUrl, active: true });
+    } else {
       const created = await chrome.tabs.create({ url: destinationUrl, active: true });
       if (created.id != null) {
         targetTabId = created.id;
       }
-    } else {
-      await chrome.tabs.update(tabId, { url: destinationUrl });
     }
   } else {
     await chrome.tabs.update(tabId, { url: destinationUrl });
@@ -165,7 +190,7 @@ async function handleJumpFromTab(tabId, snapshot, siteId, selectedText) {
   }
 
   if (settings.showBadge) {
-    chrome.tabs.sendMessage(targetTabId, {
+    safeSendMessageToTab(targetTabId, {
       type: "dochopper:showReturnBadge",
       previousTitle: snapshot.title
     });
@@ -224,4 +249,38 @@ function urlsRoughlyEqual(a, b) {
   const norm = (u) => u.replace(/\/+$/, "");
   return norm(a) === norm(b);
 }
+
+/**
+ * Determine if a URL is a restricted page where content scripts can't run.
+ * @param {string} url
+ * @returns {boolean}
+ */
+function isRestrictedUrl(url) {
+  return (
+    url.startsWith("chrome://") ||
+    url.startsWith("edge://") ||
+    url.startsWith("about:") ||
+    url.startsWith("chrome-extension://") ||
+    url.startsWith("https://chrome.google.com/webstore")
+  );
+}
+
+/**
+ * Safely send a message to a tab, ignoring "receiving end does not exist" errors
+ * which occur on pages where the content script is not injected (chrome://, etc).
+ * @param {number} tabId
+ * @param {any} message
+ */
+function safeSendMessageToTab(tabId, message) {
+  try {
+    chrome.tabs.sendMessage(tabId, message, () => {
+      // Swallow the common "Could not establish connection. Receiving end does not exist."
+      // error to avoid noisy logs when the content script isn't present.
+      void chrome.runtime.lastError;
+    });
+  } catch (e) {
+    // Ignore; tab may no longer exist.
+  }
+}
+
 

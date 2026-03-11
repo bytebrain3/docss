@@ -62,19 +62,6 @@
         padding: 4px 8px;
         font-size: 13px;
       }
-      .pro-label {
-        font-size: 11px;
-        padding: 2px 6px;
-        border-radius: 999px;
-        border: 1px solid rgba(240, 224, 64, 0.7);
-        color: var(--accent);
-        margin-left: 6px;
-      }
-      .status {
-        font-size: 12px;
-        color: var(--muted);
-        margin-top: 4px;
-      }
     </style>
     <script src="options.js" defer></script>
   </head>
@@ -90,11 +77,10 @@
         <span>Open docs in</span>
         <select id="tab-mode">
           <option value="reuse">Reuse current tab</option>
-          <option value="tab" data-pro="true">New tab (Pro)</option>
-          <option value="smart" data-pro="true">Smart mode (Pro)</option>
+          <option value="tab">New tab</option>
+          <option value="smart">Smart mode</option>
         </select>
       </label>
-      <div class="status" id="plan-status"></div>
     </section>
 
     <section class="panel">
